@@ -2,5 +2,6 @@
 npm-debug.log
 .DS_Store
 /*.env
-/config/mongoose.js
+config/mongoose.js
 docs/*.json
+Procfile
