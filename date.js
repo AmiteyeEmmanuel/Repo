@@ -1,27 +1,27 @@
-exports.getDate = function() {
+// exports.getDate = function() {
 
-    const today = new Date();
+//     const today = new Date();
 
-    const options = {
-        weekday: "long",
-        day: "numeric",
-        month: "long"
-    }
+//     const options = {
+//         weekday: "long",
+//         day: "numeric",
+//         month: "long"
+//     }
 
-    return today.toLocaleString("en-US", options);
+//     return today.toLocaleString("en-US", options);
 
-}
+// }
 
-exports.getDay = function() {
-    const date = new Date().getHours()
+// exports.getDay = function() {
+//     const date = new Date().getHours()
 
-    const opt = {
-        day: date < 12 ? 'Good Morning' : date < 18 ? 'Good Afternoon' : 'Good Night'
-    }
-    return JSON.stringify(opt.day);
+//     const opt = {
+//         day: date < 12 ? 'Good Morning' : date < 18 ? 'Good Afternoon' : 'Good Night'
+//     }
+//     return JSON.stringify(opt.day);
     // console.log(opt.day);
 
-}
+// }
 
 
 // exports.getHours = function() {

@@ -1,0 +1,91 @@
+<%-  include('header'); %>
+
+    <div id="hero-container">
+        <h1 align="center">TODO_LIST APP</h1>
+        <section class="container">
+            <!-- form to create task -->
+            <form action="/create-task" method="POST">
+
+                <!-- <table class="table">
+                        <thead>
+                            <tr class="table-active">
+                                <th>Add Task</th>
+                                <th>category</th>
+                                <th>date</th>
+                                <th></th>
+                            </tr>
+                        </thead> -->
+
+                <div class="sec1">
+                    <h2 class="sec1_heading"> Add New Task</h2>
+                    <input type="text" name="description" placeholder="Add your task here..." required class="input1"></input>
+                    <select name="category" required class="input1">
+                    <option>Personal</option>
+                    <option>Work</option>
+                    <option>School</option>
+                    <option>Business</option>
+                    <option>Cleaning</option>
+                    <option>Others</option> 
+                            </select>
+                    <input type="date" name="date" required class="input1"></th>
+                    <input type="submit" class="btn btn-success" id="add" value="+"></th>
+                </div>
+
+            </form>
+        </section>
+
+        <div class="sec2">
+            <h1 align="center">TASKS LIST</h1>
+
+            <form action="/delete-task" method="GET">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>Task</th>
+                            <th>Category</th>
+                            <th>due date</th>
+                        </tr>
+                    </thead>
+                    <% for(let i of task) { %>
+
+
+                        <tr>
+
+                            <td> <input type="checkbox" name="<%= i._id %>"></td>
+                            <td>
+                                <p id="task-description">
+                                    <%= i.description %>
+                            </td>
+                            <td>
+                                <p id="task-category"></p>:
+                                <%= i.category %>
+                            </td>
+                            <td>
+                                <p id="due-date">:
+                                    <%= i.date %>
+                                </p>
+                            </td>
+                        </tr>
+
+
+                        <% } %>
+
+
+
+
+                </table>
+                <div align="center"><input type="submit" class="btn btn-danger" value="DELETE TASK">
+                </div>
+            </form>
+
+        </div>
+
+
+
+
+    </div>
+
+    </body>
+
+    </html>

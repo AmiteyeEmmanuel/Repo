@@ -1,205 +1,91 @@
+// require express for setting up the express server
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongoose = require("mongoose");
 const _ = require("lodash");
 
+// set up the port number
+const port = 7000;
 
-const date = require(__dirname + '/date.js');
+// importing the DataBase
+const db = require('./config/mongoose');
+
+// importng the Schema For tasks
+const  Task  = require('./models/task');
+
+// using express
 const app = express();
 
-app.set('view engine', 'ejs');
+// app.use(express.static("./views"));
+
 
 app.use(express.static('public'));
+// to use encrypted data
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(bodyParser.json());
+
+// set up the view engine
+app.set('view engine', 'ejs');
+app.set('views', './views');
 
 
-// Connecting to a database using Mongoose
-mongoose.connect("mongodb+srv://Admin-Emmanuel:Nuwell123@todolist.pu5ghma.mongodb.net/TodoListDB");
-
-
-// Creating a Schema for Items
-const itemsSchema = {
-    name: {
-        type: String,
-    }
-};
-
-//Mongoose Model
-const Item = mongoose.model("Item", itemsSchema)
-
-const item1 = new Item({
-    name: "Welcome To Your TodoList"
-});
-
-const item2 = new Item({
-    name: "Create a TodoList"
-});
-
-const item3 = new Item({
-    name: "Hit the + button to add a new item"
-});
-
-const item4 = new Item({
-    name: "Hit the - button to delete an item"
-});
-
-
-const defaultItems = [item1, item2, item3, item4];
-
-
-const listSchema = {
-    name: String,
-    items: [itemsSchema]
-};
-
-const List = mongoose.model("List", listSchema);
-
-
-app.get("/", function(req, res) {
-
-    const hour = date.getDay();
-
-    const day = date.getDate();
-
-
-
-    Item.find({}, function(err, ItemsFound) {
-
-        if (ItemsFound.length === 0) {
-            Item.insertMany(defaultItems, function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log("Successfully added to the TodoList");
-                }
-            });
-            res.redirect("/")
-        } else {
-            res.render("list", {
-                ListDay: hour,
-                ListTime: day,
-                ListTitle: "Today",
-                newItems: ItemsFound
-            });
+// rendering the App Page
+app.get('/', function(req, res){
+    Task.find({}, function(err, task){
+        if(err){
+            console.log('Error in fetching tasks from db');
+            return;
         }
 
-    });
-
-});
-
-
-app.get("/:customListName", function(req, res) {
-
-    const hour = date.getDay();
-
-    const day = date.getDate();
-
-    const customListName = _.capitalize(req.params.customListName);
-
-
-    List.findOne({ name: customListName }, function(err, foundList) {
-        if (!err) {
-            if (!foundList) {
-                // Create a new list
-
-                const list = new List({
-                    name: customListName,
-                    items: defaultItems
-                });
-
-                list.save();
-                res.redirect("/" + customListName);
-            } else {
-                // Show existing list
-                res.render("list", {
-                    ListDay: hour,
-                    ListTime: day,
-                    ListTitle: foundList.name,
-                    newItems: foundList.items
-                });
-            }
-        }
-    });
-});
-
-
-// Adding items to the TodoList 
-
-app.post("/", function(req, res) {
-
-    const itemName = req.body.newItem;
-    const listName = req.body.list;
-
-    const item = new Item({
-        name: itemName
-    });
-
-    if (listName === "Today") {
-        item.save();
-        res.redirect("/");
-    }
-    // Problem Unsolved
-    // else {
-    //     List.findOne({ name: listName }, function(err, foundList) {
-    //         foundList.newItems.push(item);
-    //         foundList.save();
-    //         res.redirect("/" + listName);
-    //     });
-    // }
-});
-
-
-
-// Item.deleteOne({
-//         _id: "632cd70ed6956771d4df10c5"
-//     },
-//     function(err) {
-//         if (err) {
-//             console.log(err);
-//         } else {
-//             console.log("successfully deleted");
-//         }
-//     });
-
-app.post("/deleteItem", function(req, res) {
-    const deletedItemId = (req.body.deletedItems)
-    const listName = req.body.listName;
-
-    if (listName === "Today") {
-        Item.findByIdAndRemove(deletedItemId, function(err) {
-            if (!err) {
-                console.log("Successfully deleted Item in your TodoList")
-
-                res.redirect("/")
-            }
-        });
-    } else {
-        List.findOneAndUpdate({ name: listName }, { $pull: { items: { _id: deletedItemId } } }, function(err, foundList) {
-            if (!err) {
-                res.redirect("/" + listName);
-            }
+        return res.render('home', {
+            tittle: "Home",
+            task: task
         });
     }
+)});
 
 
+// creating Tasks
+app.post('/create-task', function(req, res){
+  //  console.log("Creating Task");
+    
+    Task.create({
+        description: req.body.description,
+        category: req.body.category,
+        date: req.body.date
+        }, function(err, newtask){
+        if(err){console.log('error in creating task', err); return;}
+        
+
+        //console.log(newtask);
+        return res.redirect('back');
+
+    });
 });
 
 
+// deleting Tasks
+app.get('/delete-task', function(req, res){
+    // get the id from query
+    var id = req.query;
 
-// app.get("/work", function(req, res) {
-//     res.render("list", {
-//         ListTitle: "Work list",
-//         newAchievements: workItems
-//     });
-// })
+    // checking the number of tasks selected to delete
+    var count = Object.keys(id).length;
+    for(let i=0; i < count ; i++){
+        
+        // finding and deleting tasks from the DB one by one using id
+        Task.findByIdAndDelete(Object.keys(id)[i], function(err){
+        if(err){
+            console.log('error in deleting task');
+            }
+        })
+    }
+    return res.redirect('back'); 
+});
 
-let port = process.env.PORT;
-if (port == null || port == "") {
-    port = 3000;
-}
+// make the app to listen on asigned port number
+app.listen(port, function(err){
+    if(err){
+        console.log(`Error in running the server : ${err}`);
+    }
 
-
-app.listen(port, function() {
-    console.log("server is running on port 3000");
+    console.log(`Server is running on port : ${port}`);
 });
