@@ -55,6 +55,11 @@ h1 {
     font-size: 1.2rem;
     outline: none;
     width: 100%;
+    color: #000;
+}
+
+.input1::placeholder {
+    color: #000;
 }
 
 .btn-success {
@@ -96,14 +101,14 @@ footer p {
 
 @media only screen and (min-width: 360px) and (max-width: 912px) {
     .container .sec1 {
-        width: 90%;
+        width: 100%;
         margin: 0 auto;
         padding: 10px;
     }
     .input1 {
         font-size: 1.2rem;
         outline: none;
-        width: 90%;
+        width: 100%;
     }
     .btn-success {
         width: 30px;
