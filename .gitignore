@@ -131,4 +131,4 @@ dist
 .pnp.*
 
 # mongodb
- config/
+ /config/mongoose.js
